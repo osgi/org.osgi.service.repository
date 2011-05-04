@@ -1,5 +1,5 @@
 /*
- * Copyright (c) OSGi Alliance (2006, 2010). All Rights Reserved.
+ * Copyright (c) OSGi Alliance (2006, 2009). All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,32 +20,41 @@
 
 package org.osgi.service.obr;
 
-import java.util.Map;
+import java.util.EventObject;
+
 
 /**
- * A named set of properties representing some capability that is provided by
- * its owner.
- * 
- * @version $Id$
- * @deprecated This is proposed API. As a result, this API may never be
- *             published or the final API may change substantially by the time
- *             of final publication. You are cautioned against relying upon this
- *             API.
+ * An event object that may be fired to {@link RepositoryListener} services
+ * to notify them of changes to a {@link Repository}
  */
-public interface Capability {
-	/**
-	 * Return the name of the capability.
-	 * 
-	 * @return capability name
-	 */
-	String getName();
-	
-	/**
-	 * Return the set of properties.
-	 * 
-	 * Notice that the value of the properties is a list of values.
-	 * 
-	 * @return a Map
-	 */
-	Map	getProperties();	
+public class RepositoryChangeEvent extends EventObject {
+  private static final long serialVersionUID = 1L;
+  
+  private long increment;
+
+  /**
+   * TODO 
+   * @param repository
+   * @param increment 
+   */
+  public RepositoryChangeEvent(Repository repository, long increment) {
+    super(repository);
+    this.increment = increment;
+  }
+
+  /**
+   * TODO 
+   * @return
+   */
+  public Repository getRepository() {
+    return (Repository) super.getSource();
+  }
+  
+  /**
+   * TODO
+   * @return
+   */
+  public long getIncrement() {
+    return increment;
+  }  
 }

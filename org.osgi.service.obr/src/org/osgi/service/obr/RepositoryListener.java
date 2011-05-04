@@ -1,5 +1,5 @@
 /*
- * Copyright (c) OSGi Alliance (2006, 2010). All Rights Reserved.
+ * Copyright (c) OSGi Alliance (2006, 2009). All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,22 +20,16 @@
 
 package org.osgi.service.obr;
 
-import java.security.BasicPermission;
-
 /**
- * TODO Implement
+ * Service interface published to the OSGi registry to be notified when
+ * repositories change.
  * 
  * @version $Id$
- * @deprecated This is proposed API. As a result, this API may never be
- *             published or the final API may change substantially by the time
- *             of final publication. You are cautioned against relying upon this
- *             API.
  */
-public class RepositoryPermission extends BasicPermission {
-
-	public RepositoryPermission(String name) {
-		super(name);
-		
-	}
-
+public interface RepositoryListener {
+  /**
+   * TODO
+   * @param event
+   */
+  void repositoryChanged(RepositoryChangeEvent event);
 }

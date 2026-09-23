@@ -1,0 +1,18 @@
+# Third-party bundle without its own source code (see licensed.bnd.tmpl).
+# Additionally needs the Bundle-Activator from the original manifest, which
+# bnd does not carry over automatically when repackaging.
+-includeresource: @jbosgi-repository-4.0.0.jar
+-fixupmessages: "Split package*"
+Bundle-SymbolicName: jbosgi-repository
+Bundle-Version: 4.0.0.CR1
+Bundle-Activator: org.jboss.osgi.repository.internal.RepositoryActivator
+Export-Package: *
+# The JBoss Modules integration is optional in the original (fallback when
+# no Modules class loader is present) - marked so in the original manifest.
+Import-Package: \
+	org.jboss.modules;resolution:=optional,\
+	org.jboss.modules.filter;resolution:=optional,\
+	org.jboss.osgi.vfs;resolution:=optional,\
+	org.jboss.shrinkwrap.*;resolution:=optional,\
+	*
+-noextraheaders: true

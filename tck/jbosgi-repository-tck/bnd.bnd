@@ -1,0 +1,10 @@
+# Third-party bundle without its own source code (see licensed.bnd.tmpl).
+# Additionally needs the Bundle-Activator from the original manifest, which
+# bnd does not carry over automatically when repackaging.
+-includeresource: @jbosgi-repository-tck-4.0.0.jar
+-fixupmessages: "Split package*"
+Bundle-SymbolicName: jbosgi-repository-tck
+Bundle-Version: 4.0.0.CR1
+Bundle-Activator: org.jboss.test.osgi.repository.tck.Activator
+Export-Package: *
+-noextraheaders: true

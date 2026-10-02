@@ -1,0 +1,11 @@
+org/osgi/service/repository/ContentNamespace.class
+org/osgi/service/repository/AndExpression.class
+org/osgi/service/repository/package-info.class
+org/osgi/service/repository/RequirementExpression.class
+org/osgi/service/repository/NotExpression.class
+org/osgi/service/repository/RequirementBuilder.class
+org/osgi/service/repository/Repository.class
+org/osgi/service/repository/ExpressionCombiner.class
+org/osgi/service/repository/IdentityExpression.class
+org/osgi/service/repository/OrExpression.class
+org/osgi/service/repository/RepositoryContent.class

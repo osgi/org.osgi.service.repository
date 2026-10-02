@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"org.osgi.test.cases.repository.junit"},{"l":"org.osgi.test.cases.repository.tb1.pkg1"},{"l":"org.osgi.test.cases.repository.tb1.pkg2"},{"l":"org.osgi.test.cases.repository.tb2"},{"l":"org.osgi.test.cases.repository.tbX"}];updateSearchResults();

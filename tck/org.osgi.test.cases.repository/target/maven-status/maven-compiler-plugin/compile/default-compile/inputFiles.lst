@@ -1,0 +1,9 @@
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.repository/tck/org.osgi.test.cases.repository/src/main/java/org/osgi/test/cases/repository/junit/RepositoryTest.java
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.repository/tck/org.osgi.test.cases.repository/src/main/java/org/osgi/test/cases/repository/junit/RepositoryTestBase.java
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.repository/tck/org.osgi.test.cases.repository/src/main/java/org/osgi/test/cases/repository/junit/RequirementImpl.java
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.repository/tck/org.osgi.test.cases.repository/src/main/java/org/osgi/test/cases/repository/junit/Respository1_1Test.java
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.repository/tck/org.osgi.test.cases.repository/src/main/java/org/osgi/test/cases/repository/junit/SignatureTestCase.java
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.repository/tck/org.osgi.test.cases.repository/src/main/java/org/osgi/test/cases/repository/tb1/pkg1/TestInterface.java
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.repository/tck/org.osgi.test.cases.repository/src/main/java/org/osgi/test/cases/repository/tb1/pkg2/TestInterface2.java
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.repository/tck/org.osgi.test.cases.repository/src/main/java/org/osgi/test/cases/repository/tb2/TestClass.java
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.repository/tck/org.osgi.test.cases.repository/src/main/java/org/osgi/test/cases/repository/tbX/SomeInterface.java

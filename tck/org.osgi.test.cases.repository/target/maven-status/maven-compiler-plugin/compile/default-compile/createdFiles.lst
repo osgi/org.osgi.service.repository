@@ -1,0 +1,11 @@
+org/osgi/test/cases/repository/junit/SignatureTestCase.class
+org/osgi/test/cases/repository/tb1/pkg1/TestInterface.class
+org/osgi/test/cases/repository/tbX/SomeInterface.class
+org/osgi/test/cases/repository/junit/RequirementImpl.class
+org/osgi/test/cases/repository/junit/Respository1_1Test$TestResource.class
+org/osgi/test/cases/repository/tb2/TestClass.class
+org/osgi/test/cases/repository/junit/RepositoryTest.class
+org/osgi/test/cases/repository/junit/Respository1_1Test.class
+org/osgi/test/cases/repository/junit/RepositoryTestBase.class
+org/osgi/test/cases/repository/tb1/pkg2/TestInterface2.class
+org/osgi/test/cases/repository/junit/RepositoryTestBase$1.class

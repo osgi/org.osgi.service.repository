@@ -1,0 +1,5 @@
+org.osgi.test.cases.repository.junit
+org.osgi.test.cases.repository.tb1.pkg1
+org.osgi.test.cases.repository.tb1.pkg2
+org.osgi.test.cases.repository.tb2
+org.osgi.test.cases.repository.tbX

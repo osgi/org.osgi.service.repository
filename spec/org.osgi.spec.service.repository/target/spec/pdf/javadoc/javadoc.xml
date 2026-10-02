@@ -1,0 +1,651 @@
+<?xml version='1.0' encoding='utf-8'?>
+<top>
+  <package name='org.osgi.service.repository' fqn='org.osgi.service.repository' qn='org.osgi.service.repository'>
+<org.osgi.annotation.versioning.Version><value>1.1</value>
+</org.osgi.annotation.versioning.Version>
+   <lead>
+Repository Service Package Version 1.1.
+   </lead>
+   <description>
+Repository Service Package Version 1.1.
+ 
+ <p>
+ Bundles wishing to use this package must list the package in the
+ Import-Package header of the bundle's manifest. This package has two types of
+ users: the consumers that use the API in this package and the providers that
+ implement the API in this package.
+ 
+ </p><p>
+ Example import for consumers using the API in this package:
+ </p><p>
+ {@code  Import-Package: org.osgi.service.repository; version="[1.1,2.0)"}
+ </p><p>
+ Example import for providers implementing the API in this package:
+ </p><p>
+ {@code  Import-Package: org.osgi.service.repository; version="[1.1,1.2)"}</p>
+   </description>
+<author>@author $Id: fcd1470035fe4c2469c180cc969d9313b86c7066 $</author>
+  <class name='AndExpression' fqn='org.osgi.service.repository.AndExpression' qn='AndExpression' package='org.osgi.service.repository' typeParam='' modifiers='public abstract' superclass='RequirementExpression' interface='yes' kind='INTERFACE'>
+<org.osgi.annotation.versioning.ProviderType></org.osgi.annotation.versioning.ProviderType>
+   <lead>
+A {@link RequirementExpression} representing the {@code and} of a number of
+ requirement expressions.
+   </lead>
+   <description>
+A {@link RequirementExpression} representing the {@code and} of a number of
+ requirement expressions.
+   </description>
+<ThreadSafe></ThreadSafe><since>@since 1.1</since>
+<implements name='RequirementExpression' fqn='org.osgi.service.repository.RequirementExpression' qn='RequirementExpression' package='org.osgi.service.repository' local='org.osgi.service.repository.AndExpression'/>
+    <method name='getRequirementExpressions' fqn='org.osgi.service.repository.AndExpression.getRequirementExpressions' qn='AndExpression.getRequirementExpressions()' package='org.osgi.service.repository' modifiers='public abstract' typeName='List&lt;RequirementExpression&gt;' qualifiedTypeName='java.util.List' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Return the requirement expressions that are combined by this
+ {@code AndExpression}.
+   </lead>
+   <description>
+Return the requirement expressions that are combined by this
+ {@code AndExpression}.
+   </description>
+
+
+<return>An unmodifiable list of requirement expressions that are combined
+         by this {@code AndExpression}. The list contains the requirement
+         expressions in the order they were specified when this
+         requirement expression was created.</return>
+
+
+
+     </method>
+  </class>
+  <class name='ContentNamespace' fqn='org.osgi.service.repository.ContentNamespace' qn='ContentNamespace' package='org.osgi.service.repository' typeParam='' modifiers='public final class' superclass='Namespace' kind='CLASS'>
+   <lead>
+Content Capability and Requirement Namespace.
+   </lead>
+   <description>
+Content Capability and Requirement Namespace.
+ 
+ <p>
+ This class defines the names for the attributes and directives for this
+ namespace. All unspecified capability attributes are of type {@code String}
+ and are used as arbitrary matching attributes for the capability. The values
+ associated with the specified directive and attribute keys are of type
+ {@code String}, unless otherwise indicated.</p>
+   </description>
+<Immutable></Immutable><author>@author $Id: a93586eef2425970fcbc684ccca026480d6df00c $</author>
+    <field name='CONTENT_NAMESPACE' fqn='org.osgi.service.repository.ContentNamespace.CONTENT_NAMESPACE' qn='ContentNamespace.CONTENT_NAMESPACE' package='org.osgi.service.repository' modifiers='public static final' typeName='String' qualifiedTypeName='java.lang.String' dimension='' constantValue='"osgi.content"'>
+   <lead>
+Namespace name for content capabilities and requirements.
+   </lead>
+   <description>
+Namespace name for content capabilities and requirements.
+ 
+ <p>
+ Also, the capability attribute used to specify the unique identifier of
+ the content. This identifier is the {@code SHA-256} hash of the content.</p>
+   </description>
+
+     </field>
+    <field name='CAPABILITY_URL_ATTRIBUTE' fqn='org.osgi.service.repository.ContentNamespace.CAPABILITY_URL_ATTRIBUTE' qn='ContentNamespace.CAPABILITY_URL_ATTRIBUTE' package='org.osgi.service.repository' modifiers='public static final' typeName='String' qualifiedTypeName='java.lang.String' dimension='' constantValue='"url"'>
+   <lead>
+The capability attribute that contains the URL to the content.
+   </lead>
+   <description>
+The capability attribute that contains the URL to the content.
+   </description>
+
+     </field>
+    <field name='CAPABILITY_SIZE_ATTRIBUTE' fqn='org.osgi.service.repository.ContentNamespace.CAPABILITY_SIZE_ATTRIBUTE' qn='ContentNamespace.CAPABILITY_SIZE_ATTRIBUTE' package='org.osgi.service.repository' modifiers='public static final' typeName='String' qualifiedTypeName='java.lang.String' dimension='' constantValue='"size"'>
+   <lead>
+The capability attribute that contains the size, in bytes, of the
+ content.
+   </lead>
+   <description>
+The capability attribute that contains the size, in bytes, of the
+ content. The value of this attribute must be of type {@code Long}.
+   </description>
+
+     </field>
+    <field name='CAPABILITY_MIME_ATTRIBUTE' fqn='org.osgi.service.repository.ContentNamespace.CAPABILITY_MIME_ATTRIBUTE' qn='ContentNamespace.CAPABILITY_MIME_ATTRIBUTE' package='org.osgi.service.repository' modifiers='public static final' typeName='String' qualifiedTypeName='java.lang.String' dimension='' constantValue='"mime"'>
+   <lead>
+The capability attribute that defines the IANA MIME Type/Format for this
+ content.
+   </lead>
+   <description>
+The capability attribute that defines the IANA MIME Type/Format for this
+ content.
+   </description>
+
+     </field>
+  </class>
+  <class name='ExpressionCombiner' fqn='org.osgi.service.repository.ExpressionCombiner' qn='ExpressionCombiner' package='org.osgi.service.repository' typeParam='' modifiers='public abstract' interface='yes' kind='INTERFACE'>
+<org.osgi.annotation.versioning.ProviderType></org.osgi.annotation.versioning.ProviderType>
+   <lead>
+An {@code ExpressionCombiner} can be used to combine requirement expressions
+ into a single complex requirement expression using the {@code and},
+ {@code or} and {@code not} operators.
+   </lead>
+   <description>
+An {@code ExpressionCombiner} can be used to combine requirement expressions
+ into a single complex requirement expression using the {@code and},
+ {@code or} and {@code not} operators.
+   </description>
+<ThreadSafe></ThreadSafe><since>@since 1.1</since>
+    <method name='and' fqn='org.osgi.service.repository.ExpressionCombiner.and' qn='ExpressionCombiner.and(RequirementExpression,RequirementExpression)' package='org.osgi.service.repository' modifiers='public abstract' typeName='AndExpression' qualifiedTypeName='org.osgi.service.repository.AndExpression' typeArgs='' dimension='' signature='(org.osgi.service.repository.RequirementExpression,org.osgi.service.repository.RequirementExpression)' flatSignature='(RequirementExpression,RequirementExpression)'>
+   <lead>
+Combine two {@link RequirementExpression}s into a requirement expression
+ using the {@code and} operator.
+   </lead>
+   <description>
+Combine two {@link RequirementExpression}s into a requirement expression
+ using the {@code and} operator.
+   </description>
+
+<param name='expr1'>The first requirement expression to combine into the
+        returned requirement expression.</param>
+<param name='expr2'>The second requirement expression to combine into the
+        returned requirement expression</param>
+
+<return>An {@link AndExpression} representing an {@code and} of the
+         specified requirement expressions.</return>
+
+
+
+    <parameter name='expr1' dimension='' typeName='RequirementExpression' fqn='org.osgi.service.repository.RequirementExpression' varargs='false'/>
+    <parameter name='expr2' dimension='' typeName='RequirementExpression' fqn='org.osgi.service.repository.RequirementExpression' varargs='false'/>
+     </method>
+    <method name='and' fqn='org.osgi.service.repository.ExpressionCombiner.and' qn='ExpressionCombiner.and(RequirementExpression,RequirementExpression,RequirementExpression[])' package='org.osgi.service.repository' modifiers='public abstract' typeName='AndExpression' qualifiedTypeName='org.osgi.service.repository.AndExpression' typeArgs='' dimension='' signature='(org.osgi.service.repository.RequirementExpression,org.osgi.service.repository.RequirementExpression,org.osgi.service.repository.RequirementExpression[])' flatSignature='(RequirementExpression,RequirementExpression,RequirementExpression[])'>
+   <lead>
+Combine multiple {@link RequirementExpression}s into a requirement
+ expression using the {@code and} operator.
+   </lead>
+   <description>
+Combine multiple {@link RequirementExpression}s into a requirement
+ expression using the {@code and} operator.
+   </description>
+
+<param name='expr1'>The first requirement expression to combine into the
+        returned requirement expression.</param>
+<param name='expr2'>The second requirement expression to combine into the
+        returned requirement expression</param>
+<param name='moreExprs'>Optional, additional requirement expressions to combine
+        into the returned requirement expression.</param>
+
+<return>An {@link AndExpression} representing an {@code and} of the
+         specified requirement expressions.</return>
+
+
+
+    <parameter name='expr1' dimension='' typeName='RequirementExpression' fqn='org.osgi.service.repository.RequirementExpression' varargs='false'/>
+    <parameter name='expr2' dimension='' typeName='RequirementExpression' fqn='org.osgi.service.repository.RequirementExpression' varargs='false'/>
+    <parameter name='moreExprs' dimension='...' typeName='RequirementExpression[]' fqn='org.osgi.service.repository.RequirementExpression[]' varargs='true'/>
+     </method>
+    <method name='identity' fqn='org.osgi.service.repository.ExpressionCombiner.identity' qn='ExpressionCombiner.identity(Requirement)' package='org.osgi.service.repository' modifiers='public abstract' typeName='IdentityExpression' qualifiedTypeName='org.osgi.service.repository.IdentityExpression' typeArgs='' dimension='' signature='(org.osgi.resource.Requirement)' flatSignature='(Requirement)'>
+   <lead>
+Wrap a {@link Requirement} in an {@link IdentityExpression}.
+   </lead>
+   <description>
+Wrap a {@link Requirement} in an {@link IdentityExpression}. This can be
+ useful when working with a combination of {@code Requirement}s and
+ {@code RequirementExpresion}s.
+   </description>
+
+<param name='req'>The requirement to wrap in a requirement expression.</param>
+
+<return>An {@link IdentityExpression} representing the specified
+         requirement.</return>
+
+
+
+    <parameter name='req' dimension='' typeName='Requirement' fqn='org.osgi.resource.Requirement' varargs='false'/>
+     </method>
+    <method name='not' fqn='org.osgi.service.repository.ExpressionCombiner.not' qn='ExpressionCombiner.not(RequirementExpression)' package='org.osgi.service.repository' modifiers='public abstract' typeName='NotExpression' qualifiedTypeName='org.osgi.service.repository.NotExpression' typeArgs='' dimension='' signature='(org.osgi.service.repository.RequirementExpression)' flatSignature='(RequirementExpression)'>
+   <lead>
+Return the negation of a {@link RequirementExpression}.
+   </lead>
+   <description>
+Return the negation of a {@link RequirementExpression}.
+   </description>
+
+<param name='expr'>The requirement expression to negate.</param>
+
+<return>A {@link NotExpression} representing the {@code not} of the
+         specified requirement expression.</return>
+
+
+
+    <parameter name='expr' dimension='' typeName='RequirementExpression' fqn='org.osgi.service.repository.RequirementExpression' varargs='false'/>
+     </method>
+    <method name='or' fqn='org.osgi.service.repository.ExpressionCombiner.or' qn='ExpressionCombiner.or(RequirementExpression,RequirementExpression)' package='org.osgi.service.repository' modifiers='public abstract' typeName='OrExpression' qualifiedTypeName='org.osgi.service.repository.OrExpression' typeArgs='' dimension='' signature='(org.osgi.service.repository.RequirementExpression,org.osgi.service.repository.RequirementExpression)' flatSignature='(RequirementExpression,RequirementExpression)'>
+   <lead>
+Combine two {@link RequirementExpression}s into a requirement expression
+ using the {@code or} operator.
+   </lead>
+   <description>
+Combine two {@link RequirementExpression}s into a requirement expression
+ using the {@code or} operator.
+   </description>
+
+<param name='expr1'>The first requirement expression to combine into the
+        returned requirement expression.</param>
+<param name='expr2'>The second requirement expression to combine into the
+        returned requirement expression</param>
+
+<return>An {@link OrExpression} representing an {@code or} of the
+         specified requirement expressions.</return>
+
+
+
+    <parameter name='expr1' dimension='' typeName='RequirementExpression' fqn='org.osgi.service.repository.RequirementExpression' varargs='false'/>
+    <parameter name='expr2' dimension='' typeName='RequirementExpression' fqn='org.osgi.service.repository.RequirementExpression' varargs='false'/>
+     </method>
+    <method name='or' fqn='org.osgi.service.repository.ExpressionCombiner.or' qn='ExpressionCombiner.or(RequirementExpression,RequirementExpression,RequirementExpression[])' package='org.osgi.service.repository' modifiers='public abstract' typeName='OrExpression' qualifiedTypeName='org.osgi.service.repository.OrExpression' typeArgs='' dimension='' signature='(org.osgi.service.repository.RequirementExpression,org.osgi.service.repository.RequirementExpression,org.osgi.service.repository.RequirementExpression[])' flatSignature='(RequirementExpression,RequirementExpression,RequirementExpression[])'>
+   <lead>
+Combine multiple {@link RequirementExpression}s into a requirement
+ expression using the {@code or} operator.
+   </lead>
+   <description>
+Combine multiple {@link RequirementExpression}s into a requirement
+ expression using the {@code or} operator.
+   </description>
+
+<param name='expr1'>The first requirement expression to combine into the
+        returned requirement expression.</param>
+<param name='expr2'>The second requirement expression to combine into the
+        returned requirement expression</param>
+<param name='moreExprs'>Optional, additional requirement expressions to combine
+        into the returned requirement expression.</param>
+
+<return>An {@link OrExpression} representing an {@code or} of the
+         specified requirement expressions.</return>
+
+
+
+    <parameter name='expr1' dimension='' typeName='RequirementExpression' fqn='org.osgi.service.repository.RequirementExpression' varargs='false'/>
+    <parameter name='expr2' dimension='' typeName='RequirementExpression' fqn='org.osgi.service.repository.RequirementExpression' varargs='false'/>
+    <parameter name='moreExprs' dimension='...' typeName='RequirementExpression[]' fqn='org.osgi.service.repository.RequirementExpression[]' varargs='true'/>
+     </method>
+  </class>
+  <class name='IdentityExpression' fqn='org.osgi.service.repository.IdentityExpression' qn='IdentityExpression' package='org.osgi.service.repository' typeParam='' modifiers='public abstract' superclass='RequirementExpression' interface='yes' kind='INTERFACE'>
+<org.osgi.annotation.versioning.ProviderType></org.osgi.annotation.versioning.ProviderType>
+   <lead>
+A {@link RequirementExpression} representing a requirement.
+   </lead>
+   <description>
+A {@link RequirementExpression} representing a requirement.
+   </description>
+<ThreadSafe></ThreadSafe><since>@since 1.1</since>
+<implements name='RequirementExpression' fqn='org.osgi.service.repository.RequirementExpression' qn='RequirementExpression' package='org.osgi.service.repository' local='org.osgi.service.repository.IdentityExpression'/>
+    <method name='getRequirement' fqn='org.osgi.service.repository.IdentityExpression.getRequirement' qn='IdentityExpression.getRequirement()' package='org.osgi.service.repository' modifiers='public abstract' typeName='Requirement' qualifiedTypeName='org.osgi.resource.Requirement' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Return the {@link Requirement} contained in this
+ {@code IdentityExpression}.
+   </lead>
+   <description>
+Return the {@link Requirement} contained in this
+ {@code IdentityExpression}.
+   </description>
+
+
+<return>The requirement contained in this {@code IdentityExpression}.</return>
+
+
+
+     </method>
+  </class>
+  <class name='NotExpression' fqn='org.osgi.service.repository.NotExpression' qn='NotExpression' package='org.osgi.service.repository' typeParam='' modifiers='public abstract' superclass='RequirementExpression' interface='yes' kind='INTERFACE'>
+<org.osgi.annotation.versioning.ProviderType></org.osgi.annotation.versioning.ProviderType>
+   <lead>
+A {@link RequirementExpression} representing the {@code not} (negation) of a
+ requirement expression.
+   </lead>
+   <description>
+A {@link RequirementExpression} representing the {@code not} (negation) of a
+ requirement expression.
+   </description>
+<ThreadSafe></ThreadSafe><since>@since 1.1</since>
+<implements name='RequirementExpression' fqn='org.osgi.service.repository.RequirementExpression' qn='RequirementExpression' package='org.osgi.service.repository' local='org.osgi.service.repository.NotExpression'/>
+    <method name='getRequirementExpression' fqn='org.osgi.service.repository.NotExpression.getRequirementExpression' qn='NotExpression.getRequirementExpression()' package='org.osgi.service.repository' modifiers='public abstract' typeName='RequirementExpression' qualifiedTypeName='org.osgi.service.repository.RequirementExpression' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Return the requirement expression that is negated by this
+ {@code NotExpression}.
+   </lead>
+   <description>
+Return the requirement expression that is negated by this
+ {@code NotExpression}.
+   </description>
+
+
+<return>The requirement expression that is negated by this
+         {@code NotExpression}.</return>
+
+
+
+     </method>
+  </class>
+  <class name='OrExpression' fqn='org.osgi.service.repository.OrExpression' qn='OrExpression' package='org.osgi.service.repository' typeParam='' modifiers='public abstract' superclass='RequirementExpression' interface='yes' kind='INTERFACE'>
+<org.osgi.annotation.versioning.ProviderType></org.osgi.annotation.versioning.ProviderType>
+   <lead>
+A {@link RequirementExpression} representing the {@code or} of a number of
+ requirement expressions.
+   </lead>
+   <description>
+A {@link RequirementExpression} representing the {@code or} of a number of
+ requirement expressions.
+   </description>
+<ThreadSafe></ThreadSafe><since>@since 1.1</since>
+<implements name='RequirementExpression' fqn='org.osgi.service.repository.RequirementExpression' qn='RequirementExpression' package='org.osgi.service.repository' local='org.osgi.service.repository.OrExpression'/>
+    <method name='getRequirementExpressions' fqn='org.osgi.service.repository.OrExpression.getRequirementExpressions' qn='OrExpression.getRequirementExpressions()' package='org.osgi.service.repository' modifiers='public abstract' typeName='List&lt;RequirementExpression&gt;' qualifiedTypeName='java.util.List' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Return the requirement expressions that are combined by this
+ {@code OrExpression}.
+   </lead>
+   <description>
+Return the requirement expressions that are combined by this
+ {@code OrExpression}.
+   </description>
+
+
+<return>An unmodifiable list of requirement expressions that are combined
+         by this {@code OrExpression}. The list contains the requirement
+         expressions in the order they were specified when this
+         requirement expression was created.</return>
+
+
+
+     </method>
+  </class>
+  <class name='Repository' fqn='org.osgi.service.repository.Repository' qn='Repository' package='org.osgi.service.repository' typeParam='' modifiers='public abstract' interface='yes' kind='INTERFACE'>
+<org.osgi.annotation.versioning.ProviderType></org.osgi.annotation.versioning.ProviderType>
+   <lead>
+A repository service that contains {@link Resource resources}.
+   </lead>
+   <description>
+A repository service that contains {@link Resource resources}.
+ 
+ <p>
+ Repositories may be registered as services and may be used as by a resolve
+ context during resolver operations.
+ 
+ </p><p>
+ Repositories registered as services may be filtered using standard service
+ properties.</p>
+   </description>
+<ThreadSafe></ThreadSafe><author>@author $Id: 72fb286c9843823cecf28230415f158bdffcf8a8 $</author>
+    <method name='findProviders' fqn='org.osgi.service.repository.Repository.findProviders' qn='Repository.findProviders(Collection)' package='org.osgi.service.repository' modifiers='public abstract' typeName='Map&lt;Requirement, Collection&lt;Capability&gt;&gt;' qualifiedTypeName='java.util.Map' typeArgs='' dimension='' signature='(java.util.Collection&lt;? extends org.osgi.resource.Requirement&gt;)' flatSignature='(Collection)'>
+   <lead>
+Find the capabilities that match the specified requirements.
+   </lead>
+   <description>
+Find the capabilities that match the specified requirements.
+   </description>
+
+<param name='requirements'>The requirements for which matching capabilities
+        should be returned. Must not be {@code null}.</param>
+
+<return>A map of matching capabilities for the specified requirements.
+         Each specified requirement must appear as a key in the map. If
+         there are no matching capabilities for a specified requirement,
+         then the value in the map for the specified requirement must be
+         an empty collection. The returned map is the property of the
+         caller and can be modified by the caller. The returned map may be
+         lazily populated, so calling {@code size()} may result in a long
+         running operation.</return>
+
+
+
+    <parameter name='requirements' dimension='' typeName='Collection&lt;? extends Requirement&gt;' fqn='java.util.Collection' varargs='false'/>
+     </method>
+    <method name='findProviders' fqn='org.osgi.service.repository.Repository.findProviders' qn='Repository.findProviders(RequirementExpression)' package='org.osgi.service.repository' modifiers='public abstract' typeName='Promise&lt;Collection&lt;Resource&gt;&gt;' qualifiedTypeName='org.osgi.util.promise.Promise' typeArgs='' dimension='' signature='(org.osgi.service.repository.RequirementExpression)' flatSignature='(RequirementExpression)'>
+   <lead>
+Find the resources that match the specified requirement expression.
+   </lead>
+   <description>
+Find the resources that match the specified requirement expression.
+   </description>
+
+<param name='expression'>The {@code RequirementExpression} for which matching
+        capabilities should be returned. Must not be {@code null}.</param>
+
+<return>A promise to a collection of matching {@code Resource}s. If there
+         are no matching resources, an empty collection is returned. The
+         returned collection is the property of the caller and can be
+         modified by the caller. The returned collection may be lazily
+         populated, so calling {@code size()} may result in a long running
+         operation.</return>
+
+
+<since>@since 1.1</since>
+    <parameter name='expression' dimension='' typeName='RequirementExpression' fqn='org.osgi.service.repository.RequirementExpression' varargs='false'/>
+     </method>
+    <method name='getExpressionCombiner' fqn='org.osgi.service.repository.Repository.getExpressionCombiner' qn='Repository.getExpressionCombiner()' package='org.osgi.service.repository' modifiers='public abstract' typeName='ExpressionCombiner' qualifiedTypeName='org.osgi.service.repository.ExpressionCombiner' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Return an expression combiner.
+   </lead>
+   <description>
+Return an expression combiner. An expression combiner can be used to
+ combine multiple requirement expressions into more complex requirement
+ expressions using {@link AndExpression and}, {@link OrExpression or} and
+ {@link NotExpression not} operators.
+   </description>
+
+
+<return>An {@code ExpressionCombiner}.</return>
+
+
+<since>@since 1.1</since>
+     </method>
+    <method name='newRequirementBuilder' fqn='org.osgi.service.repository.Repository.newRequirementBuilder' qn='Repository.newRequirementBuilder(String)' package='org.osgi.service.repository' modifiers='public abstract' typeName='RequirementBuilder' qualifiedTypeName='org.osgi.service.repository.RequirementBuilder' typeArgs='' dimension='' signature='(java.lang.String)' flatSignature='(String)'>
+   <lead>
+Return a new {@code RequirementBuilder} which provides a convenient way
+ to create a requirement.
+   </lead>
+   <description>
+Return a new {@code RequirementBuilder} which provides a convenient way
+ to create a requirement.
+ 
+ <p>
+ For example:
+ 
+ </p><pre>&#8194;<br/>&#8194;Requirement&#8194;myReq&#8194;=&#8194;repository.newRequirementBuilder("org.foo.ns1").<br/>&#8194;&#8194;&#8194;addDirective("filter",&#8194;"(org.foo.ns1=val1)").<br/>&#8194;&#8194;&#8194;addDirective("cardinality",&#8194;"multiple").build();</pre>
+   </description>
+
+<param name='namespace'>The namespace for the requirement to be created.</param>
+
+<return>A new requirement builder for a requirement in the specified
+         namespace.</return>
+
+
+<since>@since 1.1</since>
+    <parameter name='namespace' dimension='' typeName='String' fqn='java.lang.String' varargs='false'/>
+     </method>
+    <field name='URL' fqn='org.osgi.service.repository.Repository.URL' qn='Repository.URL' package='org.osgi.service.repository' modifiers='public static final' typeName='String' qualifiedTypeName='java.lang.String' dimension='' constantValue='"repository.url"'>
+   <lead>
+Service property to provide URLs related to this repository.
+   </lead>
+   <description>
+Service property to provide URLs related to this repository.
+ 
+ <p>
+ The value of this property must be of type {@code String},
+ {@code String[]}, or {@code Collection&lt;String&gt;}.</p>
+   </description>
+
+     </field>
+  </class>
+  <class name='RepositoryContent' fqn='org.osgi.service.repository.RepositoryContent' qn='RepositoryContent' package='org.osgi.service.repository' typeParam='' modifiers='public abstract' interface='yes' kind='INTERFACE'>
+<org.osgi.annotation.versioning.ProviderType></org.osgi.annotation.versioning.ProviderType>
+   <lead>
+An accessor for the content of a resource.
+   </lead>
+   <description>
+An accessor for the content of a resource.
+ 
+ All {@link Resource} objects which represent resources in a
+ {@link Repository} must implement this interface. A user of the resource can
+ then cast the {@link Resource} object to this type and then obtain an
+ {@code InputStream} to the content of the resource.
+   </description>
+<ThreadSafe></ThreadSafe><author>@author $Id: df42d4d71ef4d91f5e88ffeda43eed1edb4d495e $</author>
+    <method name='getContent' fqn='org.osgi.service.repository.RepositoryContent.getContent' qn='RepositoryContent.getContent()' package='org.osgi.service.repository' modifiers='public abstract' typeName='InputStream' qualifiedTypeName='java.io.InputStream' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Returns a new input stream to the content of this resource.
+   </lead>
+   <description>
+Returns a new input stream to the content of this resource. The content
+ is represented on the resource through the {@code osgi.content}
+ capability. If more than one such capability is associated with the
+ resource, the first such capability is returned.
+   </description>
+
+
+<return>A new input stream for associated content.</return>
+
+
+
+     </method>
+  </class>
+  <class name='RequirementBuilder' fqn='org.osgi.service.repository.RequirementBuilder' qn='RequirementBuilder' package='org.osgi.service.repository' typeParam='' modifiers='public abstract' interface='yes' kind='INTERFACE'>
+<org.osgi.annotation.versioning.ProviderType></org.osgi.annotation.versioning.ProviderType>
+   <lead>
+A builder for requirements.
+   </lead>
+   <description>
+A builder for requirements.
+   </description>
+<since>@since 1.1</since>
+    <method name='addAttribute' fqn='org.osgi.service.repository.RequirementBuilder.addAttribute' qn='RequirementBuilder.addAttribute(String,Object)' package='org.osgi.service.repository' modifiers='public abstract' typeName='RequirementBuilder' qualifiedTypeName='org.osgi.service.repository.RequirementBuilder' typeArgs='' dimension='' signature='(java.lang.String,java.lang.Object)' flatSignature='(String,Object)'>
+   <lead>
+Add an attribute to the set of attributes.
+   </lead>
+   <description>
+Add an attribute to the set of attributes.
+   </description>
+
+<param name='name'>The attribute name.</param>
+<param name='value'>The attribute value.</param>
+
+<return>This requirement builder.</return>
+
+
+
+    <parameter name='name' dimension='' typeName='String' fqn='java.lang.String' varargs='false'/>
+    <parameter name='value' dimension='' typeName='Object' fqn='java.lang.Object' varargs='false'/>
+     </method>
+    <method name='addDirective' fqn='org.osgi.service.repository.RequirementBuilder.addDirective' qn='RequirementBuilder.addDirective(String,String)' package='org.osgi.service.repository' modifiers='public abstract' typeName='RequirementBuilder' qualifiedTypeName='org.osgi.service.repository.RequirementBuilder' typeArgs='' dimension='' signature='(java.lang.String,java.lang.String)' flatSignature='(String,String)'>
+   <lead>
+Add a directive to the set of directives.
+   </lead>
+   <description>
+Add a directive to the set of directives.
+   </description>
+
+<param name='name'>The directive name.</param>
+<param name='value'>The directive value.</param>
+
+<return>This requirement builder.</return>
+
+
+
+    <parameter name='name' dimension='' typeName='String' fqn='java.lang.String' varargs='false'/>
+    <parameter name='value' dimension='' typeName='String' fqn='java.lang.String' varargs='false'/>
+     </method>
+    <method name='setAttributes' fqn='org.osgi.service.repository.RequirementBuilder.setAttributes' qn='RequirementBuilder.setAttributes(Map)' package='org.osgi.service.repository' modifiers='public abstract' typeName='RequirementBuilder' qualifiedTypeName='org.osgi.service.repository.RequirementBuilder' typeArgs='' dimension='' signature='(java.util.Map&lt;java.lang.String,java.lang.Object&gt;)' flatSignature='(Map)'>
+   <lead>
+Replace all attributes with the attributes in the specified map.
+   </lead>
+   <description>
+Replace all attributes with the attributes in the specified map.
+   </description>
+
+<param name='attributes'>The map of attributes.</param>
+
+<return>This requirement builder.</return>
+
+
+
+    <parameter name='attributes' dimension='' typeName='Map&lt;String, Object&gt;' fqn='java.util.Map' varargs='false'/>
+     </method>
+    <method name='setDirectives' fqn='org.osgi.service.repository.RequirementBuilder.setDirectives' qn='RequirementBuilder.setDirectives(Map)' package='org.osgi.service.repository' modifiers='public abstract' typeName='RequirementBuilder' qualifiedTypeName='org.osgi.service.repository.RequirementBuilder' typeArgs='' dimension='' signature='(java.util.Map&lt;java.lang.String,java.lang.String&gt;)' flatSignature='(Map)'>
+   <lead>
+Replace all directives with the directives in the specified map.
+   </lead>
+   <description>
+Replace all directives with the directives in the specified map.
+   </description>
+
+<param name='directives'>The map of directives.</param>
+
+<return>This requirement builder.</return>
+
+
+
+    <parameter name='directives' dimension='' typeName='Map&lt;String, String&gt;' fqn='java.util.Map' varargs='false'/>
+     </method>
+    <method name='setResource' fqn='org.osgi.service.repository.RequirementBuilder.setResource' qn='RequirementBuilder.setResource(Resource)' package='org.osgi.service.repository' modifiers='public abstract' typeName='RequirementBuilder' qualifiedTypeName='org.osgi.service.repository.RequirementBuilder' typeArgs='' dimension='' signature='(org.osgi.resource.Resource)' flatSignature='(Resource)'>
+   <lead>
+Set the {@code Resource}.
+   </lead>
+   <description>
+Set the {@code Resource}.
+ 
+ <p>
+ A resource is optional. This method will replace any previously set
+ resource.</p>
+   </description>
+
+<param name='resource'>The resource.</param>
+
+<return>This requirement builder.</return>
+
+
+
+    <parameter name='resource' dimension='' typeName='Resource' fqn='org.osgi.resource.Resource' varargs='false'/>
+     </method>
+    <method name='build' fqn='org.osgi.service.repository.RequirementBuilder.build' qn='RequirementBuilder.build()' package='org.osgi.service.repository' modifiers='public abstract' typeName='Requirement' qualifiedTypeName='org.osgi.resource.Requirement' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Create a requirement based upon the values set in this requirement
+ builder.
+   </lead>
+   <description>
+Create a requirement based upon the values set in this requirement
+ builder.
+   </description>
+
+
+<return>A requirement created based upon the values set in this
+         requirement builder.</return>
+
+
+
+     </method>
+    <method name='buildExpression' fqn='org.osgi.service.repository.RequirementBuilder.buildExpression' qn='RequirementBuilder.buildExpression()' package='org.osgi.service.repository' modifiers='public abstract' typeName='IdentityExpression' qualifiedTypeName='org.osgi.service.repository.IdentityExpression' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Create a requirement expression for a requirement based upon the values
+ set in this requirement builder.
+   </lead>
+   <description>
+Create a requirement expression for a requirement based upon the values
+ set in this requirement builder.
+   </description>
+
+
+<return>A requirement expression created for a requirement based upon the
+         values set in this requirement builder.</return>
+
+
+
+     </method>
+  </class>
+  <class name='RequirementExpression' fqn='org.osgi.service.repository.RequirementExpression' qn='RequirementExpression' package='org.osgi.service.repository' typeParam='' modifiers='public abstract' interface='yes' kind='INTERFACE'>
+<org.osgi.annotation.versioning.ProviderType></org.osgi.annotation.versioning.ProviderType>
+   <lead>
+The super interface for all requirement expressions.
+   </lead>
+   <description>
+The super interface for all requirement expressions. All requirement
+ expressions must extend this interface.
+   </description>
+<ThreadSafe></ThreadSafe><since>@since 1.1</since>
+  </class>
+  </package>
+</top>

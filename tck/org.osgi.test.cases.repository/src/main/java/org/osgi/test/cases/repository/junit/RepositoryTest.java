@@ -17,6 +17,8 @@
  *******************************************************************************/
 package org.osgi.test.cases.repository.junit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.jupiter.api.Test;
 import org.osgi.framework.Version;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
@@ -37,42 +40,45 @@ import org.osgi.service.repository.RepositoryContent;
  * @author David Bosschaert
  */
 public class RepositoryTest extends RepositoryTestBase {
+    @Test
     public void testQueryByBundleID() throws Exception {
         Requirement requirement = new RequirementImpl("osgi.wiring.bundle",
                 "(&(osgi.wiring.bundle=org.osgi.test.cases.repository.tb1)(bundle-version=1.0.0.test))");
 
         Map<Requirement, Collection<Capability>> result = findProvidersAllRepos(requirement);
-        assertEquals(1, result.size());
-        assertEquals(requirement, result.keySet().iterator().next());
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.keySet().iterator().next()).isEqualTo(requirement);
 
-        assertEquals(1, result.values().size());
+        assertThat(result.values().size()).isEqualTo(1);
         Collection<Capability> matchingCapabilities = result.values().iterator().next();
-        assertEquals(1, matchingCapabilities.size());
+        assertThat(matchingCapabilities.size()).isEqualTo(1);
         Capability capability = matchingCapabilities.iterator().next();
 
-        assertEquals(requirement.getNamespace(), capability.getNamespace());
-        assertEquals("org.osgi.test.cases.repository.tb1", capability.getAttributes().get("osgi.wiring.bundle"));
-        assertEquals(Version.parseVersion("1.0.0.test"), capability.getAttributes().get("bundle-version"));
+        assertThat(capability.getNamespace()).isEqualTo(requirement.getNamespace());
+        assertThat(capability.getAttributes().get("osgi.wiring.bundle")).isEqualTo("org.osgi.test.cases.repository.tb1");
+        assertThat(capability.getAttributes().get("bundle-version")).isEqualTo(Version.parseVersion("1.0.0.test"));
     }
 
+    @Test
     public void testQueryNoMatch() throws Exception {
         Requirement requirement = new RequirementImpl("osgi.wiring.bundle",
                 "(&(osgi.wiring.bundle=org.osgi.test.cases.repository.tb1)(foo=bar))");
 
         Map<Requirement, Collection<Capability>> result = findProvidersAllRepos(requirement);
-        assertEquals(1, result.size());
-        assertEquals(requirement, result.keySet().iterator().next());
+        assertThat(result).hasSize(1);
+        assertThat(result.keySet().iterator().next()).isEqualTo(requirement);
 
         Collection<Capability> matchingCapabilities = result.get(requirement);
-        assertEquals(0, matchingCapabilities.size());
+        assertThat(matchingCapabilities).isEmpty();
     }
 
+    @Test
     public void testQueryNoFilter() throws Exception {
         Requirement requirement = new RequirementImpl("osgi.wiring.bundle");
         Map<Requirement, Collection<Capability>> result = findProvidersAllRepos(requirement);
-        assertEquals(1, result.size());
+        assertThat(result).hasSize(1);
         Collection<Capability> matches = result.get(requirement);
-        assertEquals(4, matches.size());
+        assertThat(matches).hasSize(4);
 
         boolean foundtb1 = false, foundtb2 = false;
         for (Capability cap : matches) {
@@ -83,23 +89,25 @@ public class RepositoryTest extends RepositoryTestBase {
             }
         }
 
-        assertTrue(foundtb1);
-        assertTrue(foundtb2);
+        assertThat(foundtb1).isTrue();
+        assertThat(foundtb2).isTrue();
     }
 
+    @Test
     public void testQueryOnNonMainAttribute() throws Exception {
         Requirement requirement = new RequirementImpl("osgi.identity",
                 "(license=http://www.opensource.org/licenses/Apache-2.0)");
 
         Map<Requirement, Collection<Capability>> result = findProvidersAllRepos(requirement);
-        assertEquals(1, result.size());
+        assertThat(result.size()).isEqualTo(1);
         Collection<Capability> matches = result.get(requirement);
-        assertEquals(1, matches.size());
+        assertThat(matches.size()).isEqualTo(1);
         Capability capability = matches.iterator().next();
-        assertEquals("osgi.identity", capability.getNamespace());
-        assertEquals("org.osgi.test.cases.repository.tb2", capability.getAttributes().get("osgi.identity"));
+        assertThat(capability.getNamespace()).isEqualTo("osgi.identity");
+        assertThat(capability.getAttributes().get("osgi.identity")).isEqualTo("org.osgi.test.cases.repository.tb2");
     }
 
+    @Test
     public void testDisconnectedQueries() throws Exception {
         Requirement req1 = new RequirementImpl("osgi.wiring.bundle",
                 "(osgi.wiring.bundle=org.osgi.test.cases.repository.tb1)");
@@ -107,27 +115,28 @@ public class RepositoryTest extends RepositoryTestBase {
                 "(osgi.wiring.bundle=org.osgi.test.cases.repository.tb2)");
 
         Map<Requirement, Collection<Capability>> result = findProvidersAllRepos(req1, req2);
-        assertEquals(2, result.size());
+        assertThat(result.size()).isEqualTo(2);
 
         Collection<Capability> match1 = result.get(req1);
-        assertEquals(1, match1.size());
+        assertThat(match1.size()).isEqualTo(1);
         Capability cap1 = match1.iterator().next();
-        assertEquals("org.osgi.test.cases.repository.tb1", cap1.getAttributes().get("osgi.wiring.bundle"));
+        assertThat(cap1.getAttributes().get("osgi.wiring.bundle")).isEqualTo("org.osgi.test.cases.repository.tb1");
 
         Collection<Capability> match2 = result.get(req2);
-        assertEquals(1, match2.size());
+        assertThat(match2.size()).isEqualTo(1);
         Capability cap2 = match2.iterator().next();
-        assertEquals("org.osgi.test.cases.repository.tb2", cap2.getAttributes().get("osgi.wiring.bundle"));
+        assertThat(cap2.getAttributes().get("osgi.wiring.bundle")).isEqualTo("org.osgi.test.cases.repository.tb2");
     }
 
+    @Test
     public void testComplexQuery() throws Exception {
         Requirement req = new RequirementImpl("osgi.wiring.package",
                 "(|(osgi.wiring.package=org.osgi.test.cases.repository.tb1.pkg1)(osgi.wiring.package=org.osgi.test.cases.repository.tb2))");
         Map<Requirement, Collection<Capability>> result = findProvidersAllRepos(req);
 
-        assertEquals(1, result.size());
+        assertThat(result).hasSize(1);
         Collection<Capability> matches = result.get(req);
-        assertEquals(2, matches.size());
+        assertThat(matches).hasSize(2);
 
         boolean foundtb1 = false, foundtb2 = false;
         for (Capability cap : matches) {
@@ -138,29 +147,31 @@ public class RepositoryTest extends RepositoryTestBase {
             }
         }
 
-        assertTrue(foundtb1);
-        assertTrue(foundtb2);
+        assertThat(foundtb1).isTrue();
+        assertThat(foundtb2).isTrue();
     }
 
+    @Test
     public void testComplexQueryWithCustomAttributeSpecificValue() throws Exception {
         Requirement req = new RequirementImpl("osgi.wiring.package",
                 "(&(|(osgi.wiring.package=org.osgi.test.cases.repository.tb1.pkg1)(osgi.wiring.package=org.osgi.test.cases.repository.tb2))(approved=yes))");
         Map<Requirement, Collection<Capability>> result = findProvidersAllRepos(req);
-        assertEquals(1, result.size());
+        assertThat(result.size()).isEqualTo(1);
         Collection<Capability> matches = result.get(req);
-        assertEquals(1, matches.size());
+        assertThat(matches.size()).isEqualTo(1);
         Capability capability = matches.iterator().next();
-        assertEquals("org.osgi.test.cases.repository.tb2", capability.getAttributes().get("bundle-symbolic-name"));
+        assertThat(capability.getAttributes().get("bundle-symbolic-name")).isEqualTo("org.osgi.test.cases.repository.tb2");
     }
 
+    @Test
     public void testComplexQueryWithCustomAttributeDefined() throws Exception {
         Requirement req = new RequirementImpl("osgi.wiring.package",
                 "(&(|(osgi.wiring.package=org.osgi.test.cases.repository.tb1.pkg1)(osgi.wiring.package=org.osgi.test.cases.repository.tb2))(approved=*))");
         Map<Requirement, Collection<Capability>> result = findProvidersAllRepos(req);
 
-        assertEquals(1, result.size());
+        assertThat(result).hasSize(1);
         Collection<Capability> matches = result.get(req);
-        assertEquals(2, matches.size());
+        assertThat(matches).hasSize(2);
 
         boolean foundtb1 = false, foundtb2 = false;
         for (Capability cap : matches) {
@@ -171,209 +182,213 @@ public class RepositoryTest extends RepositoryTestBase {
             }
         }
 
-        assertTrue(foundtb1);
-        assertTrue(foundtb2);
+        assertThat(foundtb1).isTrue();
+        assertThat(foundtb2).isTrue();
     }
 
+    @Test
     public void testQueryCustomNamespace() throws Exception {
         Requirement req = new RequirementImpl("osgi.foo.bar", "(myattr=myval)");
         Map<Requirement, Collection<Capability>> result = findProvidersAllRepos(req);
-        assertEquals(1, result.size());
+        assertThat(result.size()).isEqualTo(1);
         Collection<Capability> matches = result.get(req);
-        assertEquals(1, matches.size());
+        assertThat(matches.size()).isEqualTo(1);
         Capability capability = matches.iterator().next();
-        assertEquals("myval", capability.getAttributes().get("myattr"));
+        assertThat(capability.getAttributes().get("myattr")).isEqualTo("myval");
     }
 
+    @Test
     public void testRepositoryContent() throws Exception {
         Requirement req = new RequirementImpl("osgi.identity", "(osgi.identity=org.osgi.test.cases.repository.tb1)");
         Map<Requirement, Collection<Capability>> result = findProvidersAllRepos(req);
-        assertEquals(1, result.size());
+        assertThat(result.size()).isEqualTo(1);
         Collection<Capability> matches = result.get(req);
-        assertEquals(1, matches.size());
+        assertThat(matches.size()).isEqualTo(1);
 
         Capability capability = matches.iterator().next();
-        assertEquals("osgi.identity", capability.getNamespace());
-        assertEquals("org.osgi.test.cases.repository.tb1", capability.getAttributes().get("osgi.identity"));
-        assertEquals(new Version("1.0.0.test"), capability.getAttributes().get("version"));
-        assertEquals("osgi.bundle", capability.getAttributes().get("type"));
-        assertEquals(0, capability.getDirectives().size());
+        assertThat(capability.getNamespace()).isEqualTo("osgi.identity");
+        assertThat(capability.getAttributes().get("osgi.identity")).isEqualTo("org.osgi.test.cases.repository.tb1");
+        assertThat(capability.getAttributes().get("version")).isEqualTo(new Version("1.0.0.test"));
+        assertThat(capability.getAttributes().get("type")).isEqualTo("osgi.bundle");
+        assertThat(capability.getDirectives().size()).isEqualTo(0);
 
         Resource resource = capability.getResource();
-        assertEquals("This resource has no requirements", 0, resource.getRequirements(null).size());
+        assertThat(resource.getRequirements(null).size()).as("This resource has no requirements").isEqualTo(0);
 
         List<Capability> bundleCaps = resource.getCapabilities("osgi.wiring.bundle");
-        assertEquals(1, bundleCaps.size());
+        assertThat(bundleCaps.size()).isEqualTo(1);
         Capability bundleCap = bundleCaps.get(0);
-        assertEquals("osgi.wiring.bundle", bundleCap.getNamespace());
-        assertEquals("org.osgi.test.cases.repository.tb1", bundleCap.getAttributes().get("osgi.wiring.bundle"));
-        assertEquals(new Version("1.0.0.test"), bundleCap.getAttributes().get("bundle-version"));
-        assertEquals(0, bundleCap.getDirectives().size());
+        assertThat(bundleCap.getNamespace()).isEqualTo("osgi.wiring.bundle");
+        assertThat(bundleCap.getAttributes().get("osgi.wiring.bundle")).isEqualTo("org.osgi.test.cases.repository.tb1");
+        assertThat(bundleCap.getAttributes().get("bundle-version")).isEqualTo(new Version("1.0.0.test"));
+        assertThat(bundleCap.getDirectives().size()).isEqualTo(0);
 
         boolean foundPkg1 = false;
         boolean foundPkg2 = false;
         List<Capability> packageCaps = resource.getCapabilities("osgi.wiring.package");
-        assertEquals(2, packageCaps.size());
+        assertThat(packageCaps.size()).isEqualTo(2);
         for (Capability packageCap : packageCaps) {
-            assertEquals("osgi.wiring.package", packageCap.getNamespace());
-            assertEquals(0, packageCap.getDirectives().size());
+            assertThat(packageCap.getNamespace()).isEqualTo("osgi.wiring.package");
+            assertThat(packageCap.getDirectives().size()).isEqualTo(0);
             Map<String, Object> attrs = packageCap.getAttributes();
-            assertEquals("org.osgi.test.cases.repository.tb1", attrs.get("bundle-symbolic-name"));
-            assertEquals(new Version("1.0.0.test"), attrs.get("bundle-version"));
-            assertEquals("no", attrs.get("approved"));
+            assertThat(attrs.get("bundle-symbolic-name")).isEqualTo("org.osgi.test.cases.repository.tb1");
+            assertThat(attrs.get("bundle-version")).isEqualTo(new Version("1.0.0.test"));
+            assertThat(attrs.get("approved")).isEqualTo("no");
 
             if ("org.osgi.test.cases.repository.tb1.pkg1".equals(attrs.get("osgi.wiring.package"))) {
-                assertEquals(new Version("0.9"), attrs.get("version"));
+                assertThat(attrs.get("version")).isEqualTo(new Version("0.9"));
                 foundPkg1 = true;
             } else if ("org.osgi.test.cases.repository.tb1.pkg2".equals(attrs.get("osgi.wiring.package"))) {
-                assertEquals(new Version("0.8"), attrs.get("version"));
+                assertThat(attrs.get("version")).isEqualTo(new Version("0.8"));
                 foundPkg2 = true;
             }
         }
-        assertTrue(foundPkg1);
-        assertTrue(foundPkg2);
+        assertThat(foundPkg1).isTrue();
+        assertThat(foundPkg2).isTrue();
 
         List<Capability> fooBarCaps = resource.getCapabilities("osgi.foo.bar");
-        assertEquals(1, fooBarCaps.size());
+        assertThat(fooBarCaps.size()).isEqualTo(1);
         Capability fooBarCap = fooBarCaps.iterator().next();
-        assertEquals("osgi.foo.bar", fooBarCap.getNamespace());
-        assertEquals(0, fooBarCap.getDirectives().size());
-        assertEquals("myval", fooBarCap.getAttributes().get("myattr"));
+        assertThat(fooBarCap.getNamespace()).isEqualTo("osgi.foo.bar");
+        assertThat(fooBarCap.getDirectives().size()).isEqualTo(0);
+        assertThat(fooBarCap.getAttributes().get("myattr")).isEqualTo("myval");
 
         // test osgi.content
         List<Capability> contentCaps = resource.getCapabilities("osgi.content");
-        assertEquals(1, contentCaps.size());
+        assertThat(contentCaps.size()).isEqualTo(1);
         Capability contentCap = contentCaps.iterator().next();
-        assertEquals("osgi.content", contentCap.getNamespace());
-        assertEquals(0, contentCap.getDirectives().size());
-        assertEquals("application/vnd.osgi.bundle", contentCap.getAttributes().get("mime"));
+        assertThat(contentCap.getNamespace()).isEqualTo("osgi.content");
+        assertThat(contentCap.getDirectives().size()).isEqualTo(0);
+        assertThat(contentCap.getAttributes().get("mime")).isEqualTo("application/vnd.osgi.bundle");
         String url = (String) contentCap.getAttributes().get("url");
         byte[] contentBytes = readFully(new URL(url).openStream());
-        assertTrue(contentBytes.length > 0);
-        assertEquals(Long.valueOf(contentBytes.length), contentCap.getAttributes().get("size"));
-        assertEquals(getSHA256(contentBytes), contentCap.getAttributes().get("osgi.content"));
+        assertThat(contentBytes.length > 0).isTrue();
+        assertThat(contentCap.getAttributes().get("size")).isEqualTo(Long.valueOf(contentBytes.length));
+        assertThat(contentCap.getAttributes().get("osgi.content")).isEqualTo(getSHA256(contentBytes));
     }
 
+    @Test
     public void testRepositoryContent2() throws Exception {
         Requirement req = new RequirementImpl("osgi.identity", "(osgi.identity=org.osgi.test.cases.repository.tb2)");
         Map<Requirement, Collection<Capability>> result = findProvidersAllRepos(req);
-        assertEquals(1, result.size());
+        assertThat(result.size()).isEqualTo(1);
         Collection<Capability> matches = result.get(req);
-        assertEquals(1, matches.size());
+        assertThat(matches.size()).isEqualTo(1);
         Capability capability = matches.iterator().next();
-        assertEquals("org.osgi.test.cases.repository.tb2", capability.getAttributes().get("osgi.identity"));
+        assertThat(capability.getAttributes().get("osgi.identity")).isEqualTo("org.osgi.test.cases.repository.tb2");
 
         Resource resource = capability.getResource();
 
         // test getCapabilities();
         List<Capability> identityCaps = resource.getCapabilities("osgi.identity");
-        assertEquals(1, identityCaps.size());
+        assertThat(identityCaps.size()).isEqualTo(1);
         Capability identityCap = identityCaps.iterator().next();
-        assertEquals("org.osgi.test.cases.repository.tb2", identityCap.getAttributes().get("osgi.identity"));
-        assertEquals(Version.parseVersion("1"), identityCap.getAttributes().get("version"));
-        assertEquals("osgi.bundle", identityCap.getAttributes().get("type"));
-        assertEquals("http://www.opensource.org/licenses/Apache-2.0", identityCap.getAttributes().get("license"));
+        assertThat(identityCap.getAttributes().get("osgi.identity")).isEqualTo("org.osgi.test.cases.repository.tb2");
+        assertThat(identityCap.getAttributes().get("version")).isEqualTo(Version.parseVersion("1"));
+        assertThat(identityCap.getAttributes().get("type")).isEqualTo("osgi.bundle");
+        assertThat(identityCap.getAttributes().get("license")).isEqualTo("http://www.opensource.org/licenses/Apache-2.0");
 
         List<Capability> contentCaps = resource.getCapabilities("osgi.content");
-        assertEquals(1, contentCaps.size());
+        assertThat(contentCaps.size()).isEqualTo(1);
         Capability contentCap = contentCaps.iterator().next();
         // content and SHA is checked below
 
-        assertEquals(1, resource.getCapabilities("osgi.wiring.bundle").size());
+        assertThat(resource.getCapabilities("osgi.wiring.bundle").size()).isEqualTo(1);
 
         List<Capability> wiringCaps = resource.getCapabilities("osgi.wiring.package");
-        assertEquals(1, wiringCaps.size());
+        assertThat(wiringCaps.size()).isEqualTo(1);
         Capability wiringCap = wiringCaps.iterator().next();
-        assertEquals("org.osgi.test.cases.repository.tb2", wiringCap.getAttributes().get("osgi.wiring.package"));
-        assertEquals(Version.parseVersion("1.2.3.qualified"), wiringCap.getAttributes().get("version"));
-        assertEquals(Version.parseVersion("1"), wiringCap.getAttributes().get("bundle-version"));
-        assertEquals("org.osgi.test.cases.repository.tb2", wiringCap.getAttributes().get("bundle-symbolic-name"));
-        assertEquals("yes", wiringCap.getAttributes().get("approved"));
-        assertEquals("org.osgi.test.cases.repository.tb1.pkg1", wiringCap.getDirectives().get("uses"));
-        assertEquals(1, resource.getCapabilities("osgi.foo.bar").size());
+        assertThat(wiringCap.getAttributes().get("osgi.wiring.package")).isEqualTo("org.osgi.test.cases.repository.tb2");
+        assertThat(wiringCap.getAttributes().get("version")).isEqualTo(Version.parseVersion("1.2.3.qualified"));
+        assertThat(wiringCap.getAttributes().get("bundle-version")).isEqualTo(Version.parseVersion("1"));
+        assertThat(wiringCap.getAttributes().get("bundle-symbolic-name")).isEqualTo("org.osgi.test.cases.repository.tb2");
+        assertThat(wiringCap.getAttributes().get("approved")).isEqualTo("yes");
+        assertThat(wiringCap.getDirectives().get("uses")).isEqualTo("org.osgi.test.cases.repository.tb1.pkg1");
+        assertThat(resource.getCapabilities("osgi.foo.bar").size()).isEqualTo(1);
 
         // Read the requirements
-        assertEquals(0, resource.getRequirements("org.osgi.nonexistent").size());
+        assertThat(resource.getRequirements("org.osgi.nonexistent").size()).isEqualTo(0);
         List<Requirement> wiringReqs = resource.getRequirements("osgi.wiring.package");
-        assertEquals(1, wiringReqs.size());
+        assertThat(wiringReqs.size()).isEqualTo(1);
         Requirement wiringReq = wiringReqs.iterator().next();
-        assertEquals(2, wiringReq.getDirectives().size());
-        assertEquals("custom directive", wiringReq.getDirectives().get("custom"));
-        assertEquals("(&(osgi.wiring.package=org.osgi.test.cases.repository.tb1.pkg1)(version>=0.9)(!(version>=1)))",
-                wiringReq.getDirectives().get("filter"));
-        assertEquals(1, wiringReq.getAttributes().size());
-        assertEquals(Long.valueOf(42), wiringReq.getAttributes().get("custom"));
+        assertThat(wiringReq.getDirectives().size()).isEqualTo(2);
+        assertThat(wiringReq.getDirectives().get("custom")).isEqualTo("custom directive");
+        assertThat(wiringReq.getDirectives().get("filter")).isEqualTo("(&(osgi.wiring.package=org.osgi.test.cases.repository.tb1.pkg1)(version>=0.9)(!(version>=1)))");
+        assertThat(wiringReq.getAttributes().size()).isEqualTo(1);
+        assertThat(wiringReq.getAttributes().get("custom")).isEqualTo(Long.valueOf(42));
 
         List<Requirement> metaReqs = resource.getRequirements("osgi.identity");
-        assertEquals(2, metaReqs.size());
+        assertThat(metaReqs.size()).isEqualTo(2);
 
         boolean foundSources = false;
         boolean foundJavaDoc = false;
         for (Requirement metaReq : metaReqs) {
-            assertEquals("osgi.identity", metaReq.getNamespace());
-            assertEquals(0, metaReq.getAttributes().size());
+            assertThat(metaReq.getNamespace()).isEqualTo("osgi.identity");
+            assertThat(metaReq.getAttributes().size()).isEqualTo(0);
             Map<String, String> dirs = metaReq.getDirectives();
-            assertEquals("meta", dirs.get("effective"));
-            assertEquals("optional", dirs.get("resolution"));
+            assertThat(dirs.get("effective")).isEqualTo("meta");
+            assertThat(dirs.get("resolution")).isEqualTo("optional");
             if ("sources".equals(dirs.get("classifier"))) {
-                assertEquals("(&(version=1.0)(osgi.identity=org.osgi.test.cases.repository.tb2-src))", dirs.get("filter"));
+                assertThat(dirs.get("filter")).isEqualTo("(&(version=1.0)(osgi.identity=org.osgi.test.cases.repository.tb2-src))");
                 foundSources = true;
             } else if ("javadoc".equals(dirs.get("classifier"))) {
-                assertEquals("(&(version=1.0)(osgi.identity=org.osgi.test.cases.repository.tb2-javadoc))", dirs.get("filter"));
+                assertThat(dirs.get("filter")).isEqualTo("(&(version=1.0)(osgi.identity=org.osgi.test.cases.repository.tb2-javadoc))");
                 foundJavaDoc = true;
             }
         }
 
-        assertTrue(foundSources);
-        assertTrue(foundJavaDoc);
+        assertThat(foundSources).isTrue();
+        assertThat(foundJavaDoc).isTrue();
 
         Set<Requirement> allReqs = new HashSet<Requirement>();
         allReqs.addAll(wiringReqs);
         allReqs.addAll(metaReqs);
-        assertEquals(allReqs, new HashSet<Requirement>(resource.getRequirements(null)));
+        assertThat(new HashSet<Requirement>(resource.getRequirements(null))).isEqualTo(allReqs);
 
         // Check content and SHA
-        URL tb1JarURL = getContext().getBundle().getResource("tb2.jar");
+        URL tb1JarURL = context.getBundle().getResource("tb2.jar");
         byte[] expectedBytes = readFully(tb1JarURL.openStream());
 
         RepositoryContent repositoryContent = (RepositoryContent) resource;
         byte[] contentBytes = readFully(repositoryContent.getContent());
-        assertTrue(contentBytes.length > 0);
-        assertTrue(Arrays.equals(expectedBytes, contentBytes));
-        assertEquals(Long.valueOf(contentBytes.length), contentCap.getAttributes().get("size"));
-        assertEquals(getSHA256(contentBytes), contentCap.getAttributes().get("osgi.content"));
+        assertThat(contentBytes.length > 0).isTrue();
+        assertThat(Arrays.equals(expectedBytes, contentBytes)).isTrue();
+        assertThat(contentCap.getAttributes().get("size")).isEqualTo(Long.valueOf(contentBytes.length));
+        assertThat(contentCap.getAttributes().get("osgi.content")).isEqualTo(getSHA256(contentBytes));
     }
 
+	@Test
 	public void testAttributeDataTypes() throws Exception {
         Requirement req = new RequirementImpl("osgi.test.namespace", "(osgi.test.namespace=a testing namespace)");
         Map<Requirement, Collection<Capability>> result = findProvidersAllRepos(req);
-        assertEquals(1, result.size());
+        assertThat(result.size()).isEqualTo(1);
         Collection<Capability> matches = result.get(req);
-        assertEquals(1, matches.size());
+        assertThat(matches.size()).isEqualTo(1);
         Capability cap = matches.iterator().next();
 
-        assertEquals(req.getNamespace(), cap.getNamespace());
-        assertEquals("a testing namespace", cap.getAttributes().get("osgi.test.namespace"));
-        assertEquals("", cap.getAttributes().get("testString"));
-        assertEquals(",", cap.getAttributes().get("testString2"));
-        assertEquals("a,b", cap.getAttributes().get("testString3"));
-        assertEquals(Version.parseVersion("1.2.3.qualifier"), cap.getAttributes().get("testVersion"));
-        assertEquals(Long.valueOf(Long.MAX_VALUE), cap.getAttributes().get("testLong"));
-        assertEquals(Double.valueOf(Math.PI), cap.getAttributes().get("testDouble"));
-        assertEquals(Arrays.asList("a", "b and c", "d"), cap.getAttributes().get("testStringList"));
-        assertEquals(Arrays.asList(",", "\\,\\"), cap.getAttributes().get("testStringList2"));
-        assertEquals(Arrays.asList(","), cap.getAttributes().get("testStringList3"));
-        assertEquals(Arrays.asList(new Version("1.2.3"), new Version("4.5.6")), cap.getAttributes().get("testVersionList"));
-        assertEquals(Arrays.asList(Long.MIN_VALUE, 0l, Long.MAX_VALUE), cap.getAttributes().get("testLongList"));
-        assertEquals(Arrays.asList(Math.E, Math.E), cap.getAttributes().get("testDoubleList"));
+        assertThat(cap.getNamespace()).isEqualTo(req.getNamespace());
+        assertThat(cap.getAttributes().get("osgi.test.namespace")).isEqualTo("a testing namespace");
+        assertThat(cap.getAttributes().get("testString")).isEqualTo("");
+        assertThat(cap.getAttributes().get("testString2")).isEqualTo(",");
+        assertThat(cap.getAttributes().get("testString3")).isEqualTo("a,b");
+        assertThat(cap.getAttributes().get("testVersion")).isEqualTo(Version.parseVersion("1.2.3.qualifier"));
+        assertThat(cap.getAttributes().get("testLong")).isEqualTo(Long.valueOf(Long.MAX_VALUE));
+        assertThat(cap.getAttributes().get("testDouble")).isEqualTo(Double.valueOf(Math.PI));
+        assertThat(cap.getAttributes().get("testStringList")).isEqualTo(Arrays.asList("a", "b and c", "d"));
+        assertThat(cap.getAttributes().get("testStringList2")).isEqualTo(Arrays.asList(",", "\\,\\"));
+        assertThat(cap.getAttributes().get("testStringList3")).isEqualTo(Arrays.asList(","));
+        assertThat(cap.getAttributes().get("testVersionList")).isEqualTo(Arrays.asList(new Version("1.2.3"), new Version("4.5.6")));
+        assertThat(cap.getAttributes().get("testLongList")).isEqualTo(Arrays.asList(Long.MIN_VALUE, 0l, Long.MAX_VALUE));
+        assertThat(cap.getAttributes().get("testDoubleList")).isEqualTo(Arrays.asList(Math.E, Math.E));
     }
 
+    @Test
     public void testQueryExpressions() throws Exception {
         Requirement emptyReq = new RequirementImpl("osgi.test.namespace");
         Map<Requirement, Collection<Capability>> result = findProvidersAllRepos(emptyReq);
-        assertEquals(1, result.size());
+        assertThat(result).hasSize(1);
         Collection<Capability> match = result.get(emptyReq);
-        assertEquals(2, match.size());
+        assertThat(match).hasSize(2);
 
         Capability expected = null;
         for (Capability cap : match) {
@@ -383,51 +398,52 @@ public class RepositoryTest extends RepositoryTestBase {
             }
         }
 
-        assertEquals(expected, findSingleCapSingleReq("osgi.test.namespace", "(testString=*)"));
-        assertNull(findSingleCapSingleReq("osgi.test.namespace", "(testString=foo)"));
-        assertEquals(expected, findSingleCapSingleReq("osgi.test.namespace", "(testString2=,)"));
-        assertNull(findSingleCapSingleReq("osgi.test.namespace", "(testString2=a,b)"));
-        assertEquals(expected, findSingleCapSingleReq("osgi.test.namespace", "(testString3=a,b)"));
-        assertNull(findSingleCapSingleReq("osgi.test.namespace", "(testString3=,)"));
-        assertEquals(expected, findSingleCapSingleReq("osgi.test.namespace", "(testVersion=1.2.3.qualifier)"));
-        assertNull(findSingleCapSingleReq("osgi.test.namespace", "(testVersion=2.0)"));
-        assertEquals(expected, findSingleCapSingleReq("osgi.test.namespace", "(testVersion>=1.0)"));
-        assertNull(findSingleCapSingleReq("osgi.test.namespace", "(testVersion>=2.0)"));
-        assertEquals(expected, findSingleCapSingleReq("osgi.test.namespace", "(testVersion<=1.2.3.qualifier)"));
-        assertNull(findSingleCapSingleReq("osgi.test.namespace", "(|(testVersion<=1.0)(testVersion>=2.0))"));
-        assertEquals(expected, findSingleCapSingleReq("osgi.test.namespace", "(&(testVersion>=1.0)(!(testVersion>=2.0)))"));
-        assertNull(findSingleCapSingleReq("osgi.test.namespace", "(&(testVersion>=1.0)(!(testVersion>=1.1)))"));
-        assertEquals(expected, findSingleCapSingleReq("osgi.test.namespace", "(testStringList=d)"));
-        assertNull(findSingleCapSingleReq("osgi.test.namespace", "(testStringList=e)"));
-        assertEquals(expected, findSingleCapSingleReq("osgi.test.namespace", "(testStringList=b*c)"));
-        assertNull(findSingleCapSingleReq("osgi.test.namespace", "(testStringList=b*d)"));
-        assertEquals(expected, findSingleCapSingleReq("osgi.test.namespace", "(testStringList~=D)"));
-        assertNull(findSingleCapSingleReq("osgi.test.namespace", "(testStringList~=E)"));
-        assertEquals(expected, findSingleCapSingleReq("osgi.test.namespace", "(testStringList2=,)"));
-        assertEquals(expected, findSingleCapSingleReq("osgi.test.namespace", "(testStringList2=\\\\,\\\\)"));
-        assertNull(findSingleCapSingleReq("osgi.test.namespace", "(testStringList2=\\\\)"));
-        assertEquals(expected, findSingleCapSingleReq("osgi.test.namespace", "(testStringList3=,)"));
-        assertNull(findSingleCapSingleReq("osgi.test.namespace", "(testStringList3=\\\\)"));
-        assertEquals(expected, findSingleCapSingleReq("osgi.test.namespace", "(testLong=" + Long.MAX_VALUE + ")"));
-        assertNull(findSingleCapSingleReq("osgi.test.namespace", "(testLong=" + Long.MIN_VALUE + ")"));
-        assertEquals(expected, findSingleCapSingleReq("osgi.test.namespace", "(testDouble>=3)"));
-        assertNull(findSingleCapSingleReq("osgi.test.namespace", "(testDouble>=3.2)"));
-        assertEquals(expected, findSingleCapSingleReq("osgi.test.namespace", "(testVersionList=*)"));
-        assertEquals(expected, findSingleCapSingleReq("osgi.test.namespace", "(testVersionList=1.2.3)"));
-        assertEquals(expected, findSingleCapSingleReq("osgi.test.namespace", "(testVersionList=4.5.6)"));
-        assertNull(findSingleCapSingleReq("osgi.test.namespace", "(testVersionList=1.0)"));
-        assertEquals(expected, findSingleCapSingleReq("osgi.test.namespace", "(testLongList<=0)"));
-        assertEquals(expected, findSingleCapSingleReq("osgi.test.namespace", "(testLongList>=0)"));
-        assertEquals(expected, findSingleCapSingleReq("osgi.test.namespace", "(testLongList=0)"));
-        assertNull(findSingleCapSingleReq("osgi.test.namespace", "(testLongList=1)"));
-        assertEquals(expected, findSingleCapSingleReq("osgi.test.namespace", "(testDoubleList=2.718281828459045)"));
-        assertNull(findSingleCapSingleReq("osgi.test.namespace", "(testDoubleList=0)"));
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testString=*)")).isEqualTo(expected);
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testString=foo)")).isNull();
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testString2=,)")).isEqualTo(expected);
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testString2=a,b)")).isNull();
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testString3=a,b)")).isEqualTo(expected);
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testString3=,)")).isNull();
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testVersion=1.2.3.qualifier)")).isEqualTo(expected);
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testVersion=2.0)")).isNull();
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testVersion>=1.0)")).isEqualTo(expected);
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testVersion>=2.0)")).isNull();
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testVersion<=1.2.3.qualifier)")).isEqualTo(expected);
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(|(testVersion<=1.0)(testVersion>=2.0))")).isNull();
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(&(testVersion>=1.0)(!(testVersion>=2.0)))")).isEqualTo(expected);
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(&(testVersion>=1.0)(!(testVersion>=1.1)))")).isNull();
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testStringList=d)")).isEqualTo(expected);
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testStringList=e)")).isNull();
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testStringList=b*c)")).isEqualTo(expected);
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testStringList=b*d)")).isNull();
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testStringList~=D)")).isEqualTo(expected);
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testStringList~=E)")).isNull();
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testStringList2=,)")).isEqualTo(expected);
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testStringList2=\\\\,\\\\)")).isEqualTo(expected);
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testStringList2=\\\\)")).isNull();
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testStringList3=,)")).isEqualTo(expected);
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testStringList3=\\\\)")).isNull();
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testLong=" + Long.MAX_VALUE + ")")).isEqualTo(expected);
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testLong=" + Long.MIN_VALUE + ")")).isNull();
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testDouble>=3)")).isEqualTo(expected);
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testDouble>=3.2)")).isNull();
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testVersionList=*)")).isEqualTo(expected);
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testVersionList=1.2.3)")).isEqualTo(expected);
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testVersionList=4.5.6)")).isEqualTo(expected);
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testVersionList=1.0)")).isNull();
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testLongList<=0)")).isEqualTo(expected);
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testLongList>=0)")).isEqualTo(expected);
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testLongList=0)")).isEqualTo(expected);
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testLongList=1)")).isNull();
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testDoubleList=2.718281828459045)")).isEqualTo(expected);
+        assertThat(findSingleCapSingleReq("osgi.test.namespace", "(testDoubleList=0)")).isNull();
     }
 
+    @Test
     public void testMultiContent() throws Exception {
         Resource res = findSingleCapSingleReq("osgi.identity", "(osgi.identity=org.osgi.test.cases.repository.testresource)").getResource();
         List<Capability> caps = res.getCapabilities("osgi.content");
-        assertEquals(2, caps.size());
+        assertThat(caps).hasSize(2);
 
         boolean foundZip = false;
         boolean foundTgz = false;
@@ -436,24 +452,25 @@ public class RepositoryTest extends RepositoryTestBase {
 
             URL url = null;
             if ("application/vnd.osgi.test.zip".equals(attrs.get("mime"))) {
-                url = getContext().getBundle().getResource("/testresource.zip");
+                url = context.getBundle().getResource("/testresource.zip");
                 foundZip = true;
             } else if ("application/vnd.osgi.test.tar.gz".equals(attrs.get("mime"))) {
-                url = getContext().getBundle().getResource("/testresource.tar.gz");
+                url = context.getBundle().getResource("/testresource.tar.gz");
                 foundTgz = true;
             }
 
             byte[] expectedBytes = readFully(url.openStream());
 
             byte[] actualBytes = readFully(new URL((String) attrs.get("url")).openStream());
-            assertTrue(Arrays.equals(expectedBytes, actualBytes));
-            assertEquals(Long.valueOf(expectedBytes.length), attrs.get("size"));
-            assertEquals(getSHA256(expectedBytes), attrs.get("osgi.content"));
+            assertThat(Arrays.equals(expectedBytes, actualBytes)).isTrue();
+            assertThat(attrs.get("size")).isEqualTo(Long.valueOf(expectedBytes.length));
+            assertThat(attrs.get("osgi.content")).isEqualTo(getSHA256(expectedBytes));
         }
-        assertTrue(foundZip);
-        assertTrue(foundTgz);
+        assertThat(foundZip).isTrue();
+        assertThat(foundTgz).isTrue();
     }
 
+    @Test
     public void testSHA256ComputationSanityCheck() throws Exception {
         // This test validates the SHA256 computation in this test class with the example SHA256 serializations
         // as listed here: http://en.wikipedia.org/wiki/SHA-2
@@ -466,23 +483,20 @@ public class RepositoryTest extends RepositoryTestBase {
         // SHA256("The quick brown fox jumps over the lazy dog.")
         // ef537f25c895bfa782526529a9b63d97aa631564d5d789c2b765448c8635fb6c
 
-        assertEquals("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-                getSHA256("".getBytes()));
-        assertEquals("d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592",
-                getSHA256("The quick brown fox jumps over the lazy dog".getBytes()));
-        assertEquals("ef537f25c895bfa782526529a9b63d97aa631564d5d789c2b765448c8635fb6c",
-                getSHA256("The quick brown fox jumps over the lazy dog.".getBytes()));
+        assertThat(getSHA256("".getBytes())).isEqualTo("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
+        assertThat(getSHA256("The quick brown fox jumps over the lazy dog".getBytes())).isEqualTo("d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592");
+        assertThat(getSHA256("The quick brown fox jumps over the lazy dog.".getBytes())).isEqualTo("ef537f25c895bfa782526529a9b63d97aa631564d5d789c2b765448c8635fb6c");
     }
 
     private Capability findSingleCapSingleReq(String ns, String filter) {
         Requirement req = new RequirementImpl(ns, filter);
         Map<Requirement, Collection<Capability>> res = findProvidersAllRepos(req);
-        assertEquals(1, res.size());
+        assertThat(res).hasSize(1);
         Collection<Capability> caps = res.get(req);
         if (caps.size() == 0)
             return null;
 
-        assertEquals(1, caps.size());
+        assertThat(caps).hasSize(1);
         return caps.iterator().next();
     }
 

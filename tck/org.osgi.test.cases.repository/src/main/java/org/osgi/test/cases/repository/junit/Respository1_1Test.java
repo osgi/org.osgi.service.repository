@@ -17,12 +17,15 @@
  *******************************************************************************/
 package org.osgi.test.cases.repository.junit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.jupiter.api.Test;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
@@ -36,15 +39,17 @@ import org.osgi.service.repository.RequirementExpression;
  * @author David Bosschaert
  */
 public class Respository1_1Test extends RepositoryTestBase {
+    @Test
     public void testRequirementBuilderNamespace() throws Exception {
         RequirementBuilder builder = getRepo().newRequirementBuilder("something");
         Requirement req = builder.build();
-        assertEquals("something", req.getNamespace());
-        assertNull(req.getResource());
-        assertEquals(0, req.getAttributes().size());
-        assertEquals(0, req.getDirectives().size());
+        assertThat(req.getNamespace()).isEqualTo("something");
+        assertThat(req.getResource()).isNull();
+        assertThat(req.getAttributes().size()).isEqualTo(0);
+        assertThat(req.getDirectives().size()).isEqualTo(0);
     }
 
+    @Test
     public void testRequirementBuilderAttrsDirs() throws Exception {
         RequirementBuilder b1 = getRepo().newRequirementBuilder("org.acme.test");
         b1.addAttribute("a", "a1");
@@ -54,13 +59,13 @@ public class Respository1_1Test extends RepositoryTestBase {
         b1.addDirective("filter", "(a=b)");
         Requirement req1 = b1.build();
 
-        assertEquals(2, req1.getAttributes().size());
-        assertEquals("a1", req1.getAttributes().get("a"));
-        assertEquals("b1", req1.getAttributes().get("b"));
-        assertEquals(3, req1.getDirectives().size());
-        assertEquals("d1", req1.getDirectives().get("d"));
-        assertEquals("e1", req1.getDirectives().get("e"));
-        assertEquals("(a=b)", req1.getDirectives().get("filter"));
+        assertThat(req1.getAttributes().size()).isEqualTo(2);
+        assertThat(req1.getAttributes().get("a")).isEqualTo("a1");
+        assertThat(req1.getAttributes().get("b")).isEqualTo("b1");
+        assertThat(req1.getDirectives().size()).isEqualTo(3);
+        assertThat(req1.getDirectives().get("d")).isEqualTo("d1");
+        assertThat(req1.getDirectives().get("e")).isEqualTo("e1");
+        assertThat(req1.getDirectives().get("filter")).isEqualTo("(a=b)");
 
         Map<String, Object> attrs = new HashMap<String, Object>();
         attrs.put("a", "a1");
@@ -76,42 +81,45 @@ public class Respository1_1Test extends RepositoryTestBase {
         b2.setDirectives(dirs);
         Requirement req2 = b2.build();
 
-        assertEquals(2, req2.getAttributes().size());
-        assertEquals("a1", req2.getAttributes().get("a"));
-        assertEquals("b1", req2.getAttributes().get("b"));
-        assertEquals(3, req2.getDirectives().size());
-        assertEquals("d1", req2.getDirectives().get("d"));
-        assertEquals("e1", req2.getDirectives().get("e"));
-        assertEquals("(a=b)", req2.getDirectives().get("filter"));
+        assertThat(req2.getAttributes().size()).isEqualTo(2);
+        assertThat(req2.getAttributes().get("a")).isEqualTo("a1");
+        assertThat(req2.getAttributes().get("b")).isEqualTo("b1");
+        assertThat(req2.getDirectives().size()).isEqualTo(3);
+        assertThat(req2.getDirectives().get("d")).isEqualTo("d1");
+        assertThat(req2.getDirectives().get("e")).isEqualTo("e1");
+        assertThat(req2.getDirectives().get("filter")).isEqualTo("(a=b)");
 
-        assertEquals(req1, req2);
+        assertThat(req2).isEqualTo(req1);
 
         Requirement otherReq = getRepo().newRequirementBuilder("org.acme.test").build();
-        assertFalse(req1.equals(otherReq));
+        assertThat(req1).isNotEqualTo(otherReq);
     }
 
+    @Test
     public void testRequirementBuilderResource() throws Exception {
         RequirementBuilder builder = getRepo().newRequirementBuilder("osgi.test.namespace");
         Resource tr = new TestResource();
         builder.setResource(tr);
         Requirement req = builder.build();
-        assertSame(tr, req.getResource());
+        assertThat(req.getResource()).isSameAs(tr);
     }
 
+    @Test
     public void testSimpleRequirementExpression() throws Exception {
         RequirementBuilder builder = getRepo().newRequirementBuilder("osgi.wiring.bundle");
         builder.addDirective("filter", "(&(osgi.wiring.bundle=org.osgi.test.cases.repository.tb1)(bundle-version=1.0.0.test))");
 
         RequirementExpression expr = builder.buildExpression();
         Set<Resource> result = findProvidersAllRepos(expr);
-        assertEquals(1, result.size());
+        assertThat(result.size()).isEqualTo(1);
         Resource res = result.iterator().next();
 
         List<Capability> identityCaps = res.getCapabilities("osgi.identity");
-        assertEquals(1, identityCaps.size());
-        assertEquals("org.osgi.test.cases.repository.tb1", identityCaps.get(0).getAttributes().get("osgi.identity"));
+        assertThat(identityCaps.size()).isEqualTo(1);
+        assertThat(identityCaps.get(0).getAttributes().get("osgi.identity")).isEqualTo("org.osgi.test.cases.repository.tb1");
     }
 
+    @Test
     public void testAndExpression() throws Exception {
         RequirementBuilder builder1 = getRepo().newRequirementBuilder("osgi.wiring.package");
         builder1.addDirective("filter", "(&(osgi.wiring.package=org.osgi.test.cases.repository.tbX)(version>=7)(!(version>=8)))");
@@ -124,7 +132,7 @@ public class Respository1_1Test extends RepositoryTestBase {
         ExpressionCombiner ec = getRepo().getExpressionCombiner();
         RequirementExpression wiringAndContent = ec.and(wiringReq, contentReq);
         Set<Resource> result1 = findProvidersAllRepos(wiringAndContent);
-        assertEquals(2, result1.size());
+        assertThat(result1).hasSize(2);
 
         boolean foundTB3 = false;
         boolean foundTB4 = false;
@@ -137,20 +145,21 @@ public class Respository1_1Test extends RepositoryTestBase {
                 foundTB4 = true;
             }
         }
-        assertTrue(foundTB3);
-        assertTrue(foundTB4);
+        assertThat(foundTB3).isTrue();
+        assertThat(foundTB4).isTrue();
 
         RequirementBuilder builder3 = getRepo().newRequirementBuilder("osgi.identity");
         builder3.addDirective("filter", "(license=http://opensource.org/licenses/EPL*)");
         RequirementExpression licenseReq = builder3.buildExpression();
         RequirementExpression andLicense = ec.and(wiringAndContent, licenseReq);
         Set<Resource> result2 = findProvidersAllRepos(andLicense);
-        assertEquals(1, result2.size());
+        assertThat(result2).hasSize(1);
         Resource resource = result2.iterator().next();
         Object id = resource.getCapabilities("osgi.identity").iterator().next().getAttributes().get("osgi.identity");
-        assertEquals("org.osgi.test.cases.repository.tb4", id);
+        assertThat(id).isEqualTo("org.osgi.test.cases.repository.tb4");
     }
 
+    @Test
     public void testMultiAndExpression() throws Exception {
         RequirementBuilder b1 = getRepo().newRequirementBuilder("osgi.content");
         b1.addDirective("filter", "(mime=application/vnd.osgi.bundle)");
@@ -163,33 +172,35 @@ public class Respository1_1Test extends RepositoryTestBase {
         IdentityExpression re3 = b3.buildExpression();
 
         Set<Resource> result = findProvidersAllRepos(getRepo().getExpressionCombiner().and(re1, re2, re3));
-        assertEquals(1, result.size());
+        assertThat(result.size()).isEqualTo(1);
         Resource res = result.iterator().next();
         
         List<Capability> identityCaps = res.getCapabilities("osgi.identity");
-        assertEquals(1, identityCaps.size());
-        assertEquals("org.osgi.test.cases.repository.tb3", identityCaps.get(0).getAttributes().get("osgi.identity"));
+        assertThat(identityCaps.size()).isEqualTo(1);
+        assertThat(identityCaps.get(0).getAttributes().get("osgi.identity")).isEqualTo("org.osgi.test.cases.repository.tb3");
     }
 
+    @Test
     public void testNotExpression() throws Exception {
         ExpressionCombiner ec = getRepo().getExpressionCombiner();
         RequirementBuilder builder = getRepo().newRequirementBuilder("osgi.foo.bar");
         builder.addDirective("filter", "(myattr=myotherval)");
         RequirementExpression req = builder.buildExpression();
         Set<Resource> result1 = findProvidersAllRepos(req);
-        assertEquals(1, result1.size());
+        assertThat(result1.size()).isEqualTo(1);
         Resource res1 = result1.iterator().next();
-        assertEquals("org.osgi.test.cases.repository.tb2", res1.getCapabilities("osgi.identity").iterator().next()
-                .getAttributes().get("osgi.identity"));
+        assertThat(res1.getCapabilities("osgi.identity").iterator().next()
+                .getAttributes().get("osgi.identity")).isEqualTo("org.osgi.test.cases.repository.tb2");
 
         Set<Resource> result2 = findProvidersAllRepos(ec.not(req));
-        assertTrue(result2.size() > 0);
+        assertThat(result2.size() > 0).isTrue();
         for (Resource r : result2) {
             Object id = r.getCapabilities("osgi.identity").iterator().next().getAttributes().get("osgi.identity");
-            assertTrue(!"org.osgi.test.cases.repository.tb2".equals(id));
+            assertThat(!"org.osgi.test.cases.repository.tb2".equals(id)).isTrue();
         }
     }
 
+    @Test
     public void testOrExpression() throws Exception {
         RequirementBuilder builder1 = getRepo().newRequirementBuilder("osgi.test.namespace");
         builder1.addDirective("filter", "(osgi.test.namespace=*)");
@@ -200,7 +211,7 @@ public class Respository1_1Test extends RepositoryTestBase {
         RequirementExpression req2 = builder2.buildExpression();
 
         Set<Resource> result = findProvidersAllRepos(getRepo().getExpressionCombiner().or(req1, req2));
-        assertEquals(2, result.size());
+        assertThat(result).hasSize(2);
 
         boolean foundTB1 = false;
         boolean foundRes = false;
@@ -213,10 +224,11 @@ public class Respository1_1Test extends RepositoryTestBase {
                 foundRes = true;
             }
         }
-        assertTrue(foundTB1);
-        assertTrue(foundRes);
+        assertThat(foundTB1).isTrue();
+        assertThat(foundRes).isTrue();
     }
 
+    @Test
     public void testMultiOrExpression() throws Exception {
         RequirementBuilder b1 = getRepo().newRequirementBuilder("osgi.identity");
         b1.addDirective("filter", "(osgi.identity=org.osgi.test.cases.repository.tb1)");
@@ -229,7 +241,7 @@ public class Respository1_1Test extends RepositoryTestBase {
         IdentityExpression re3 = b3.buildExpression();
 
         Set<Resource> result = findProvidersAllRepos(getRepo().getExpressionCombiner().or(re1, re2, re3));
-        assertEquals(3, result.size());
+        assertThat(result).hasSize(3);
 
         boolean foundTB1 = false;
         boolean foundTB2 = false;
@@ -246,11 +258,12 @@ public class Respository1_1Test extends RepositoryTestBase {
                 foundTB4 = true;
             }
         }
-        assertTrue(foundTB1);
-        assertTrue(foundTB2);
-        assertTrue(foundTB4);
+        assertThat(foundTB1).isTrue();
+        assertThat(foundTB2).isTrue();
+        assertThat(foundTB4).isTrue();
     }
 
+    @Test
     public void testCombinedExpression() throws Exception {
         RequirementBuilder builder1 = getRepo().newRequirementBuilder("osgi.wiring.package");
         builder1.addDirective("filter", "(osgi.wiring.package=org.osgi.test.cases.repository.tbX)");
@@ -268,7 +281,7 @@ public class Respository1_1Test extends RepositoryTestBase {
         RequirementExpression complexReq = ec.or(req3, andNotReq);
 
         Set<Resource> result = findProvidersAllRepos(complexReq);
-        assertEquals(2, result.size());
+        assertThat(result).hasSize(2);
 
         boolean foundTB1 = false;
         boolean foundTB3 = false;
@@ -281,8 +294,8 @@ public class Respository1_1Test extends RepositoryTestBase {
                 foundTB3 = true;
             }
         }
-        assertTrue(foundTB1);
-        assertTrue(foundTB3);
+        assertThat(foundTB1).isTrue();
+        assertThat(foundTB3).isTrue();
     }
 
     private Set<Resource> findProvidersAllRepos(RequirementExpression expr) throws Exception {

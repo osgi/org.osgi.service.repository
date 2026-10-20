@@ -28,17 +28,23 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.repository.Repository;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.common.annotation.InjectBundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * @author David Bosschaert
  */
-public abstract class RepositoryTestBase extends DefaultTestBundleControl {
+public abstract class RepositoryTestBase {
+
+	@InjectBundleContext
+	BundleContext		context;
     public static final String REPOSITORY_XML_KEY = "repository-xml";
     public static final String REPOSITORY_POPULATED_KEY = "repository-populated";
 
@@ -67,17 +73,16 @@ public abstract class RepositoryTestBase extends DefaultTestBundleControl {
      * does.</li>
      * </ul>
      */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    public void setUp() throws Exception {
 
         String repoXML = getRepoXML();
         Hashtable<String, Object> props = new Hashtable<String, Object>();
         props.put(REPOSITORY_XML_KEY, RepositoryTest.class.getName());
-        repositoryXMLService = getContext().registerService(String.class, repoXML, props);
+        repositoryXMLService = context.registerService(String.class, repoXML, props);
 
-        Filter filter = getContext().createFilter("(" + REPOSITORY_POPULATED_KEY + "=" + RepositoryTest.class.getName() + ")");
-        ServiceTracker<?, ?> populatedST = new ServiceTracker<Object, Object>(getContext(), filter, null);
+        Filter filter = context.createFilter("(" + REPOSITORY_POPULATED_KEY + "=" + RepositoryTest.class.getName() + ")");
+        ServiceTracker<?, ?> populatedST = new ServiceTracker<Object, Object>(context, filter, null);
         populatedST.open();
         Object svc = populatedST.waitForService(30000);
         populatedST.close();
@@ -88,7 +93,7 @@ public abstract class RepositoryTestBase extends DefaultTestBundleControl {
                             + "It should should register a service with property: " + REPOSITORY_POPULATED_KEY + "="
                             + RepositoryTest.class.getName());
 
-        repositoryServiceTracker = new ServiceTracker<Repository, Repository>(getContext(), Repository.class, null) {
+        repositoryServiceTracker = new ServiceTracker<Repository, Repository>(context, Repository.class, null) {
             @Override
             public Repository addingService(ServiceReference<Repository> reference) {
                 Repository service = super.addingService(reference);
@@ -105,16 +110,15 @@ public abstract class RepositoryTestBase extends DefaultTestBundleControl {
         repositoryServiceTracker.open();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterEach
+    public void tearDown() throws Exception {
         repositoryXMLService.unregister();
         repositoryServiceTracker.close();
 
-        super.tearDown();
     }
 
     private String getRepoXML() throws Exception {
-        URL url = getContext().getBundle().getResource("/xml/content1.xml");
+        URL url = context.getBundle().getResource("/xml/content1.xml");
         String xml = new String(readFully(url.openStream()));
 
         xml = fillInTemplate(xml, "tb1");
@@ -132,7 +136,7 @@ public abstract class RepositoryTestBase extends DefaultTestBundleControl {
     }
 
     private String fillInResourceTemplate(String xml, String resource, String name) throws IOException, NoSuchAlgorithmException {
-        URL url = getContext().getBundle().getResource(resource);
+        URL url = context.getBundle().getResource(resource);
         byte[] bytes = readFully(url.openStream());
 
         xml = xml.replaceAll("@@" + name + "SHA256@@", getSHA256(bytes));

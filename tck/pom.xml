@@ -14,7 +14,7 @@
 
 	<properties>
 		<jboss-logging.version>3.6.3.Final</jboss-logging.version>
-		<log4j-api.version>2.7</log4j-api.version>
+		<log4j-api.version>2.26.1</log4j-api.version>
 		<org.eclipse.osgi.version>3.24.300</org.eclipse.osgi.version>
 		<org.osgi.framework.version>1.10.0</org.osgi.framework.version>
 		<org.osgi.util.function.version>1.2.0</org.osgi.util.function.version>
